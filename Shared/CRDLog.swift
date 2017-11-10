@@ -23,6 +23,15 @@
 import Foundation
 
 /**
+ * Great idea for mostly implementing the functionality of @synchronized in Objective-C in Swift code by ɲeuroburɳ, Bryan McLemore, and BadPirate (see https://stackoverflow.com/questions/24045895/what-is-the-swift-equivalent-to-objective-cs-synchronized)
+ */
+func synced(_ lock: Any, closure: () -> ()) {
+    objc_sync_enter(lock)
+    defer { objc_sync_exit(lock) }
+    closure()
+}
+
+/**
  Class providing console and file logging to the app.
  */
 public class CRDLog {
@@ -37,6 +46,12 @@ public class CRDLog {
     
     /// Delegate for log events
     private weak var delegate: CRDLogDelegate? = nil
+    
+    /// Flag to track whether we have logged before in this session.
+    private var hasLogged: Bool = false
+    
+    /// Flag to control whether logging to disk file is enabled.
+    private var enableFile: Bool = true
     
     // MARK: Initializers
     
@@ -58,6 +73,35 @@ public class CRDLog {
         // Set the log file url.
         let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).last
         logFileURL = (cacheDirectory?.appendingPathComponent("\(logFileName)"))!
+        
+        // Reset the flag to track whether we have logged before in this session.
+        hasLogged = false
+        
+        // Enable disk logging by default
+        enableFile = true
+    }
+    
+    // MARK: - Public properties
+    
+    var enableLogging: Bool {
+        
+        get {
+        
+            var result = true
+            synced(self) {
+
+                result = enableFile
+            }
+            return result
+        }
+        
+        set {
+            
+            synced(self) {
+                
+                enableFile = newValue
+            }
+        }
     }
     
     // MARK: - Public methods
@@ -107,6 +151,12 @@ public class CRDLog {
         
         // The log clear operation.
         let clearClosure = {
+            
+            // If we have disabled file logging, bail out now.
+            if !self.enableLogging {
+                
+                return
+            }
             
             if let fileHandle = self.openFile() {
                 
@@ -203,6 +253,34 @@ public class CRDLog {
         // The write operation
         let outputClosure = {
             
+            // Print out header if this is the first time we logged something in this session.
+            synced(self) {
+                
+                if !self.hasLogged {
+                    
+                    // Set the flag for logging in this session.
+                    self.hasLogged = true
+                    
+                    // Get the header from the delegate if possible.
+                    if let header = self.delegate?.logHeader!() {
+                        
+                        print(header)
+                    }
+                }
+            }
+            
+            // Create the log message with the current time, the message type, and the message.
+            let message = "\(Date()) \(type) \(message)"
+
+            // Output the message to the debug console.
+            print(message)
+
+            // If we have disabled file logging, bail out now.
+            if !self.enableLogging {
+                
+                return
+            }
+            
             if let fileHandle = self.openFile() {
                 
                 // Always append new content to the end of the log.
@@ -217,7 +295,6 @@ public class CRDLog {
                             
                             if let encodedData = "\(header)\n".data(using: String.Encoding.utf8) {
                                 
-                                print(header)
                                 fileHandle.write(encodedData)
                                 fileHandle.synchronizeFile()
                             }
@@ -225,12 +302,7 @@ public class CRDLog {
                     }
                 }
                 
-                // Create the log message with the current time, the message type, and the message.
-                let message = "\(Date()) \(type) \(message)"
                 if let encodedData = "\(message)\n".data(using: String.Encoding.utf8) {
-                    
-                    // Output the message to the debug console.
-                    print(message)
                     
                     // Write the message to the log file and flush.
                     fileHandle.write(encodedData)

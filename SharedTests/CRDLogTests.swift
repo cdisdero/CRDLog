@@ -218,4 +218,151 @@ class CRDLogTests: XCTestCase, CRDLogDelegate {
             XCTAssertTrue((actualLogContent?.contains("ERROR \(expectedEntry)"))!, "Expected entry '\(expectedEntry)' not found.")
         }
     }
+
+    /// Tests writing several entries, clearing, then writing more entries with logging enabled/disabled.
+    func testLogWritesEnableDisableFileLogging() {
+        
+        // Expected header written.
+        let expectedHeader = "Header written"
+        
+        // Expected log content.
+        var expectedLogContent: [String] = [
+            "Log entry 1",
+            "Log entry 2"
+        ]
+        
+        // Clear the log
+        log?.clear()
+        
+        // Get the current content of the log
+        
+        var actualLogContent: String? = nil
+        var semaphore = DispatchSemaphore(value: 0)
+        
+        log?.contentsWithCompletion { (result: String?) in
+            
+            actualLogContent = result
+            semaphore.signal()
+        }
+        
+        _ = semaphore.wait(timeout: DispatchTime.now() + Double(Int64(NSEC_PER_SEC) * Int64(30)) / Double(NSEC_PER_SEC))
+        
+        XCTAssertNotNil(actualLogContent, "Expected non-nil log file content.")
+        XCTAssertTrue((actualLogContent?.isEmpty)!, "Expected empty log content.")
+        
+        // Write some entries.
+        for entry in expectedLogContent {
+            
+            log?.info(entry)
+        }
+        
+        // Get the current content of the log
+        
+        actualLogContent = nil
+        semaphore = DispatchSemaphore(value: 0)
+        
+        log?.contentsWithCompletion { (result: String?) in
+            
+            actualLogContent = result
+            semaphore.signal()
+        }
+        
+        _ = semaphore.wait(timeout: DispatchTime.now() + Double(Int64(NSEC_PER_SEC) * Int64(30)) / Double(NSEC_PER_SEC))
+        
+        XCTAssertNotNil(actualLogContent, "Expected non-nil log file content.")
+        
+        XCTAssertTrue((actualLogContent?.hasPrefix(expectedHeader))!, "Expected header not found.")
+        for expectedEntry in expectedLogContent {
+            
+            XCTAssertTrue((actualLogContent?.contains("INFO \(expectedEntry)"))!, "Expected entry '\(expectedEntry)' not found.")
+        }
+        
+        let unexpectedLogContent = [
+            "Log entry 3",
+            "Log entry 4"
+        ]
+        
+        // Disable logging to disk.
+        log?.enableLogging = false
+        
+        // Write some entries.
+        for entry in unexpectedLogContent {
+            
+            log?.warn(entry)
+        }
+        
+        // Get the current content of the log
+        
+        actualLogContent = nil
+        semaphore = DispatchSemaphore(value: 0)
+        
+        log?.contentsWithCompletion { (result: String?) in
+            
+            actualLogContent = result
+            semaphore.signal()
+        }
+        
+        _ = semaphore.wait(timeout: DispatchTime.now() + Double(Int64(NSEC_PER_SEC) * Int64(30)) / Double(NSEC_PER_SEC))
+        
+        XCTAssertNotNil(actualLogContent, "Expected non-nil log file content.")
+        
+        XCTAssertTrue((actualLogContent?.hasPrefix(expectedHeader))!, "Expected header not found.")
+        for expectedEntry in expectedLogContent {
+            
+            XCTAssertTrue((actualLogContent?.contains("INFO \(expectedEntry)"))!, "Expected entry '\(expectedEntry)' not found.")
+        }
+        
+        for unexpectedEntry in unexpectedLogContent {
+            
+            XCTAssertFalse((actualLogContent?.contains("WARN \(unexpectedEntry)"))!, "Unexpected entry '\(unexpectedEntry)' not found.")
+        }
+        
+        // Enable disk logging again
+        log?.enableLogging = true
+        
+        // Expected log content.
+        expectedLogContent = [
+            "Log entry 1",
+            "Log entry 2",
+            "Log entry 5",
+            "Log entry 6"
+        ]
+        
+        let writeLogContent = [
+            "Log entry 5",
+            "Log entry 6"
+        ]
+        
+        // Write some entries.
+        for entry in writeLogContent {
+            
+            log?.info(entry)
+        }
+        
+        // Get the current content of the log
+        
+        actualLogContent = nil
+        semaphore = DispatchSemaphore(value: 0)
+        
+        log?.contentsWithCompletion { (result: String?) in
+            
+            actualLogContent = result
+            semaphore.signal()
+        }
+        
+        _ = semaphore.wait(timeout: DispatchTime.now() + Double(Int64(NSEC_PER_SEC) * Int64(30)) / Double(NSEC_PER_SEC))
+        
+        XCTAssertNotNil(actualLogContent, "Expected non-nil log file content.")
+        
+        XCTAssertTrue((actualLogContent?.hasPrefix(expectedHeader))!, "Expected header not found.")
+        for expectedEntry in expectedLogContent {
+            
+            XCTAssertTrue((actualLogContent?.contains("INFO \(expectedEntry)"))!, "Expected entry '\(expectedEntry)' not found.")
+        }
+
+        for unexpectedEntry in unexpectedLogContent {
+            
+            XCTAssertFalse((actualLogContent?.contains("WARN \(unexpectedEntry)"))!, "Unexpected entry '\(unexpectedEntry)' not found.")
+        }
+    }
 }
