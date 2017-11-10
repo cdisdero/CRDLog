@@ -83,7 +83,7 @@ public class CRDLog {
     
     // MARK: - Public properties
     
-    var enableLogging: Bool {
+    public var enableLogging: Bool {
         
         get {
         
