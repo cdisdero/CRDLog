@@ -11,8 +11,9 @@ Pod::Spec.new do |s|
 # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 #
 
+s.swift_version = '4.2'
 s.name         = "CRDLog"
-s.version      = "1.0.2"
+s.version      = "1.0.3"
 s.summary      = "Simple and quick logging for your iOS, macOS, watchOS, and tvOS apps."
 s.description  = <<-DESC
 Simple straightforward Swift-based logging facility for iOS, macOS, watchOS, and tvOS apps.
@@ -34,7 +35,7 @@ s.author             = { "Christopher Disdero" => "info@code.chrisdisdero.com" }
 #
 
 s.ios.deployment_target = "9.0"
-s.osx.deployment_target = "10.11"
+s.osx.deployment_target = "10.12"
 s.watchos.deployment_target = "3.0"
 s.tvos.deployment_target = "9.0"
 
@@ -47,5 +48,9 @@ s.source       = { :git => "https://github.com/cdisdero/CRDLog.git", :tag => "#{
 #
 
 s.source_files  = "Shared/*.swift"
+s.ios.source_files   = 'CRDLogMobile/*.h'
+s.osx.source_files   = 'CRDLogMac/*.h'
+s.watchos.source_files = 'CRDLogWatch/*.h'
+s.tvos.source_files  = 'CRDLogTV/*.h'
 
 end

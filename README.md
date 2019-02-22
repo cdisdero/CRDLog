@@ -1,4 +1,4 @@
-# CRDKeychain
+# CRDLog
 [![Build Status](https://travis-ci.org/cdisdero/CRDLog.svg?branch=master)](https://travis-ci.org/cdisdero/CRDLog)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/CRDLog.svg)](https://img.shields.io/cocoapods/v/CRDLog.svg)
 [![Platform](https://img.shields.io/cocoapods/p/CRDLog.svg?style=flat)](http://cocoadocs.org/docsets/CRDLog)
@@ -16,8 +16,8 @@ Simple straightforward Swift-based logging facility for iOS, macOS, watchOS, and
 A common need in apps you make is to log important activities in the app to a log file and provide the app user with a way to send that log to you to diagnose and troubleshoot problems that might occur in the field. I've written several solutions to the logging problem over the years, but decided to write another solution that's simple and easy to use for Swift-based projects.
 
 ## Requirements
-- iOS 9.0+ / macOS 10.11+ / watchOS 3.0+ / tvOS 9.0+
-- Xcode 9.1+
+- iOS 9.0+ / macOS 10.12+ / watchOS 3.0+ / tvOS 9.0+
+- Xcode 10.1+
 - Swift 4.0+
 
 ## Installation
