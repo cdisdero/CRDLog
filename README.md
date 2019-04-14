@@ -17,8 +17,8 @@ A common need in apps you make is to log important activities in the app to a lo
 
 ## Requirements
 - iOS 9.0+ / macOS 10.12+ / watchOS 3.0+ / tvOS 9.0+
-- Xcode 10.1+
-- Swift 4.0+
+- Xcode 10.2+
+- Swift 5.0+
 
 ## Installation
 You can simply copy the following files from the GitHub tree into your project:
@@ -38,7 +38,7 @@ Alternatively, you can install it as a Cocoapod
 $ gem install cocoapods
 ```
 
-> CocoaPods 1.1.0+ is required to build CRDLog.
+> CocoaPods 1.7.0+ is required to build CRDLog.
 
 To integrate CRDLog into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
@@ -59,9 +59,9 @@ $ pod install
 ### Carthage
 You can use Carthage to add this framework to your project:
 1. Add a `Cartfile` to the directory where your xcodeproj file is located.
-2. Edit this file to specify the 1.0.1 release or higher of this framework:
+2. Edit this file to specify the 1.0.4 release or higher of this framework:
 ```
-github "cdisdero/CRDLog" >= 1.0.1
+github "cdisdero/CRDLog" >= 1.0.4
 ```
 3. Run Carthage to add the framework sources and build this framework:
 ```

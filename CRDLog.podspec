@@ -11,9 +11,9 @@ Pod::Spec.new do |s|
 # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 #
 
-s.swift_version = '4.2'
+s.swift_version = '5.0'
 s.name         = "CRDLog"
-s.version      = "1.0.3"
+s.version      = "1.0.4"
 s.summary      = "Simple and quick logging for your iOS, macOS, watchOS, and tvOS apps."
 s.description  = <<-DESC
 Simple straightforward Swift-based logging facility for iOS, macOS, watchOS, and tvOS apps.
